@@ -3,19 +3,18 @@ import numpy as np
 from pymavlink import mavutil
 import time
 
-# 1. CONEXÃO
+#conexão do código com o pixhawk
 master = mavutil.mavlink_connection('udp:127.0.0.1:14550')
 master.wait_heartbeat()
 print("Conectado!")
 
-# Força o modo GUIDED e ARMA o drone via código
+#configuração de inicialização para não ter q digitar via terminal o mode guided e arm throttle 
 master.mav.command_long_send(master.target_system, master.target_component,
                              mavutil.mavlink.MAV_CMD_DO_SET_MODE, 0, 1, 4, 0, 0, 0, 0, 0)
 master.mav.command_long_send(master.target_system, master.target_component,
                              mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM, 0, 1, 0, 0, 0, 0, 0, 0)
 
 def enviar_velocidade(vx, vy, vz):
-    # Máscara que foca apenas nas velocidades lineares
     master.mav.set_position_target_local_ned_send(
         0, master.target_system, master.target_component,
         mavutil.mavlink.MAV_FRAME_BODY_OFFSET_NED, 
@@ -27,7 +26,6 @@ camera = cv2.VideoCapture(0)
 while True:
     sucesso, frame = camera.read()
     if not sucesso: break
-
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     lower_red = np.array([0, 120, 70])
     upper_red = np.array([10, 255, 255])
